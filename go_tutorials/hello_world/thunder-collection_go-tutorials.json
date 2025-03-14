@@ -1,0 +1,35 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "go-tutorials",
+    "collectionId": "c39bf047-ec3a-48e5-a6c4-7da4c72e86e7",
+    "dateExported": "2025-03-14T06:37:41.102Z",
+    "version": "1.2",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "b9fdd585-7b64-435b-8a6d-933c66bc2312",
+            "colId": "c39bf047-ec3a-48e5-a6c4-7da4c72e86e7",
+            "containerId": "",
+            "name": "coins",
+            "url": "localhost:8000/account/coins?username=testuser",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2025-03-14T06:28:46.834Z",
+            "modified": "2025-03-14T06:33:50.295Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "testtoken"
+                }
+            ],
+            "params": [
+                {
+                    "name": "username",
+                    "value": "testuser",
+                    "isPath": false
+                }
+            ]
+        }
+    ],
+    "ref": "q1GNytzOYN-AbrtbLac7CDDjTBTIZNTZ7WvlSzv4VVL9DZw3FwZtONcZORG8AbuNZIfjR-a1GzQwnekPSUHruQ"
+}
