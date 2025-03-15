@@ -1,29 +1,37 @@
 package main
 
 import (
-	"log/slog"
+	"log"
 	"net/http"
-	"os"
 )
 
+type Middleware func(http.HandlerFunc) http.HandlerFunc
+
+var middlewares = []Middleware{
+	TokenAuthMiddleware,
+}
+
 func main() {
-	logger := slog.Default()
-	logger.Info("Starting application", "version", "1.0.0")
+	log.Println("Starting application", "version", "1.0.0")
 	setRoutes()
 	startApiServer()
 }
 
 func setRoutes() {
-	http.HandleFunc("/user/profile", handleClientProfile)
+	var handler http.HandlerFunc = handleClientProfile
+	
+	for _, middleware := range middlewares {
+		handler = middleware(handler)
+	}
+	http.HandleFunc("/user/profile", handler)
 }
 
 func startApiServer() {
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-
-	logger.Info("Server is running on port 8080")
+	log.Println("Server is running on port 8080")
 	err := http.ListenAndServe(":8080", nil)
 
 	if err != nil {
-		logger.Error("Failed to start server", "err", err)
+		log.Println("Failed to start server")
+		log.Println(err)
 	}
 }

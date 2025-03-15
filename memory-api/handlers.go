@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 )
 
@@ -18,14 +17,8 @@ func handleClientProfile(responseWriter http.ResponseWriter, request *http.Reque
 }
 
 func GetClientProfile(responseWriter http.ResponseWriter, request *http.Request) {
-	var clientId = request.URL.Query().Get("clientId")
-	clientProfile, ok := database[clientId]
-
-	if !ok || clientId == "" {
-		log.Println("failed to get client profile")
-		http.Error(responseWriter, "forbidden", http.StatusForbidden)
-		return
-	}
+	// Get from context, set by middleware
+	clientProfile := request.Context().Value("clientProfile").(ClientProfile)
 
 	responseWriter.Header().Set("Content-Type", "application/json")
 
@@ -39,14 +32,8 @@ func GetClientProfile(responseWriter http.ResponseWriter, request *http.Request)
 }
 
 func UpdateClientProfile(responseWriter http.ResponseWriter, request *http.Request) {
-	var clientId = request.URL.Query().Get("clientId")
-	clientProfile, ok := database[clientId]
-
-	if !ok || clientId == "" {
-		log.Println("failed to get client profile")
-		http.Error(responseWriter, "forbidden", http.StatusForbidden)
-		return
-	}
+	// Get from context, set by middleware
+	clientProfile := request.Context().Value("clientProfile").(ClientProfile)
 
 	var payloadData ClientProfile
 
