@@ -2,6 +2,14 @@
 
 golang
 
+## Init go project
+
+`go mod init github.com/mmxcrono/some-project`
+
+## Update dependencies
+
+`go mod tidy`
+
 ## Build
 
 `go build main.go`
