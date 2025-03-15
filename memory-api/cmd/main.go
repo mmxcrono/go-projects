@@ -3,12 +3,15 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/mmxcrono/go-projects/memory-api/internal/auth"
+	"github.com/mmxcrono/go-projects/memory-api/internal/handlers"
 )
 
 type Middleware func(http.HandlerFunc) http.HandlerFunc
 
 var middlewares = []Middleware{
-	TokenAuthMiddleware,
+	auth.TokenAuthMiddleware,
 }
 
 func main() {
@@ -18,7 +21,7 @@ func main() {
 }
 
 func setRoutes() {
-	var handler http.HandlerFunc = handleClientProfile
+	var handler http.HandlerFunc = handlers.HandleClientProfile
 	
 	for _, middleware := range middlewares {
 		handler = middleware(handler)

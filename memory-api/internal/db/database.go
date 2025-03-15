@@ -1,4 +1,4 @@
-package main
+package db
 
 type ClientProfile struct {
 	Id    string
@@ -7,7 +7,7 @@ type ClientProfile struct {
 	Token string
 }
 
-var database = map[string]ClientProfile{
+var Database = map[string]ClientProfile{
 	"user1": {
 		Email: "test1@email.com",
 		Id:    "user1",

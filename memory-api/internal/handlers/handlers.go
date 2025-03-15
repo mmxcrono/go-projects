@@ -1,13 +1,16 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/mmxcrono/go-projects/memory-api/internal/auth"
+	"github.com/mmxcrono/go-projects/memory-api/internal/db"
 )
 
-func handleClientProfile(responseWriter http.ResponseWriter, request *http.Request) {
+func HandleClientProfile(responseWriter http.ResponseWriter, request *http.Request) {
 	switch (request.Method) {
 	case http.MethodGet:
 		GetClientProfile(responseWriter, request)
@@ -27,7 +30,7 @@ func GetClientProfile(responseWriter http.ResponseWriter, request *http.Request)
 		return
 	}
 
-	clientProfile, ok := database[clientId]
+	clientProfile, ok := db.Database[clientId]
 
 	if !ok {
 		log.Printf("no client found for clientId %v\n", clientId)
@@ -37,7 +40,7 @@ func GetClientProfile(responseWriter http.ResponseWriter, request *http.Request)
 
 	responseWriter.Header().Set("Content-Type", "application/json")
 
-	response := ClientProfile{
+	response := db.ClientProfile{
 		Email: clientProfile.Email,
 		Name: clientProfile.Name,
 		Id: clientProfile.Id,
@@ -47,7 +50,7 @@ func GetClientProfile(responseWriter http.ResponseWriter, request *http.Request)
 }
 
 func UpdateClientProfile(responseWriter http.ResponseWriter, request *http.Request) {
-	currentUser := request.Context().Value(ContextCurrentUser).(*ClientProfile)
+	currentUser := request.Context().Value(auth.ContextCurrentUser).(*db.ClientProfile)
 
 	var clientId = strings.TrimSpace(request.URL.Query().Get("clientId"))
 	
@@ -57,7 +60,7 @@ func UpdateClientProfile(responseWriter http.ResponseWriter, request *http.Reque
 		return
 	}
 
-	clientProfile, ok := database[clientId]
+	clientProfile, ok := db.Database[clientId]
 
 	if !ok {
 		log.Printf("no client found for clientId %v\n", clientId)
@@ -65,7 +68,7 @@ func UpdateClientProfile(responseWriter http.ResponseWriter, request *http.Reque
 		return
 	}
 
-	var payloadData ClientProfile
+	var payloadData db.ClientProfile
 
 	if err := json.NewDecoder(request.Body).Decode(&payloadData); err != nil {
 		log.Printf("invalid JSON\n")
@@ -83,7 +86,7 @@ func UpdateClientProfile(responseWriter http.ResponseWriter, request *http.Reque
 		clientProfile.Name = payloadData.Name
 	}
 
-	database[clientProfile.Id] = clientProfile
+	db.Database[clientProfile.Id] = clientProfile
 
 	responseWriter.WriteHeader(http.StatusOK)
 }

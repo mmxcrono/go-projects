@@ -1,9 +1,11 @@
-package main
+package auth
 
 import (
 	"context"
 	"net/http"
 	"strings"
+
+	"github.com/mmxcrono/go-projects/memory-api/internal/db"
 )
 
 type AuthContext string
@@ -30,12 +32,12 @@ func TokenAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func getClientProfileForToken(token string) *ClientProfile {
+func getClientProfileForToken(token string) *db.ClientProfile {
 	if strings.HasPrefix(token, "Bearer ") {
 
 		var extractedToken string = strings.TrimPrefix(token, "Bearer ")
 
-		for _, profile := range database {
+		for _, profile := range db.Database {
 			if profile.Token == extractedToken {
 				return &profile
 			}
