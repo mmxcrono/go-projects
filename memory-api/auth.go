@@ -6,32 +6,41 @@ import (
 	"strings"
 )
 
+type AuthContext string
+
+const (
+	ContextCurrentUser AuthContext = "currentUser"
+)
+
 func TokenAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(responseWriter http.ResponseWriter, request *http.Request) {
-		var clientId = request.URL.Query().Get("clientId")
-		clientProfile, ok := database[clientId]
-
-		if !ok || clientId == "" {
-			http.Error(responseWriter, "forbidden", http.StatusForbidden)
-			return
-		}
-
 		token := request.Header.Get("Authorization")
 
-		if !isValidToken(clientProfile, token) {
+		var currentUser = getClientProfileForToken(token)
+
+		if currentUser == nil {
 			http.Error(responseWriter, "forbidden", http.StatusForbidden)
 			return
 		}
 
-		newContext := context.WithValue(request.Context(), "clientProfile", clientProfile)
+		newContext := context.WithValue(request.Context(), ContextCurrentUser, currentUser)
 		request = request.WithContext(newContext)
+
 		next.ServeHTTP(responseWriter, request)
 	}
 }
 
-func isValidToken(clientProfile ClientProfile, token string) bool {
+func getClientProfileForToken(token string) *ClientProfile {
 	if strings.HasPrefix(token, "Bearer ") {
-		return strings.TrimPrefix(token, "Bearer ") == clientProfile.Token
+
+		var extractedToken string = strings.TrimPrefix(token, "Bearer ")
+
+		for _, profile := range database {
+			if profile.Token == extractedToken {
+				return &profile
+			}
+		}
 	}
-	return false
+
+	return nil
 }

@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
+	"strings"
 )
 
 func handleClientProfile(responseWriter http.ResponseWriter, request *http.Request) {
@@ -17,8 +19,21 @@ func handleClientProfile(responseWriter http.ResponseWriter, request *http.Reque
 }
 
 func GetClientProfile(responseWriter http.ResponseWriter, request *http.Request) {
-	// Get from context, set by middleware
-	clientProfile := request.Context().Value("clientProfile").(ClientProfile)
+	var clientId = strings.TrimSpace(request.URL.Query().Get("clientId"))
+	
+	if clientId == "" {
+		log.Println("clientId is required")
+		http.Error(responseWriter, "clientId is required", http.StatusBadRequest)
+		return
+	}
+
+	clientProfile, ok := database[clientId]
+
+	if !ok {
+		log.Printf("no client found for clientId %v\n", clientId)
+		http.Error(responseWriter, "not found", http.StatusNotFound)
+		return
+	}
 
 	responseWriter.Header().Set("Content-Type", "application/json")
 
@@ -32,20 +47,42 @@ func GetClientProfile(responseWriter http.ResponseWriter, request *http.Request)
 }
 
 func UpdateClientProfile(responseWriter http.ResponseWriter, request *http.Request) {
-	// Get from context, set by middleware
-	clientProfile := request.Context().Value("clientProfile").(ClientProfile)
+	currentUser := request.Context().Value(ContextCurrentUser).(*ClientProfile)
+
+	var clientId = strings.TrimSpace(request.URL.Query().Get("clientId"))
+	
+	if clientId == "" || currentUser.Id != clientId {
+		log.Printf("clientId does not match current user %v\n", clientId)
+		http.Error(responseWriter, "forbidden", http.StatusForbidden)
+		return
+	}
+
+	clientProfile, ok := database[clientId]
+
+	if !ok {
+		log.Printf("no client found for clientId %v\n", clientId)
+		http.Error(responseWriter, "not found", http.StatusNotFound)
+		return
+	}
 
 	var payloadData ClientProfile
 
 	if err := json.NewDecoder(request.Body).Decode(&payloadData); err != nil {
+		log.Printf("invalid JSON\n")
 		http.Error(responseWriter, "invalid JSON", http.StatusBadRequest)
 		return
 	}
 
 	defer request.Body.Close()
 
-	clientProfile.Email = payloadData.Email
-	clientProfile.Name = payloadData.Name
+	if payloadData.Email != "" {
+		clientProfile.Email = payloadData.Email
+	}
+	
+	if payloadData.Name != "" {
+		clientProfile.Name = payloadData.Name
+	}
+
 	database[clientProfile.Id] = clientProfile
 
 	responseWriter.WriteHeader(http.StatusOK)
