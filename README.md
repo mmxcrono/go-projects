@@ -57,3 +57,7 @@ Shell
 
 - Use short, lowercase, singular package names (e.g., auth, not authentication).
 - Avoid generic names like util or helpers.
+
+## MySQL
+
+`docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=memory_api -p 3306:3306 -d mysql:latest`
