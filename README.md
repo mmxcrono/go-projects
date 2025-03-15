@@ -14,6 +14,16 @@ OR
 
 `go run main.go`
 
+## Docker
+
+Build
+
+`docker build -t my-go-app .`
+
+Run
+
+`docker run --rm -p 8080:8080 --name my-go-container my-go-app`
+
 ## Folder Structure
 
 ```
