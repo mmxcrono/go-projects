@@ -14,6 +14,10 @@ OR
 
 `go run main.go`
 
+If there are multiple go files
+
+`go run .`
+
 ## Docker
 
 Build
