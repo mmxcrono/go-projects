@@ -28,6 +28,10 @@ Run
 
 `docker run --rm -p 8080:8080 --name my-go-container my-go-app`
 
+Shell
+
+`docker run -it --rm my-go-app sh`
+
 ## Folder Structure
 
 ```
