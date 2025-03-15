@@ -13,3 +13,21 @@ OR
 ## Run
 
 `go run main.go`
+
+## Folder Structure
+
+```
+/project
+  ├── cmd/ # Main applications
+  ├── pkg/ # Reusable packages
+  ├── internal/ # Internal packages (not exported)
+  ├── api/ # API definitions
+  ├── config/ # Configuration files
+  ├── scripts/ # Build and automation scripts
+  ├── test/ # Additional test data
+  ├── go.mod # Go module file
+  ├── go.sum # Module dependencies checksum
+```
+
+- Use short, lowercase, singular package names (e.g., auth, not authentication).
+- Avoid generic names like util or helpers.
