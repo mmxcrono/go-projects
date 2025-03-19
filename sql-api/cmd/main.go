@@ -1,35 +1,21 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
-	"log"
-	"os"
 
-	"github.com/go-sql-driver/mysql"
+	"github.com/mmxcrono/go-projects/sql-api/internal/db"
 )
 
-var db *sql.DB
-
 func main() {
-	// Capture connection properties.
-	cfg := mysql.Config{
-		User:   os.Getenv("DB_USER"),
-		Passwd: os.Getenv("DB_PASS"),
-		Net:    "tcp",
-		Addr:   os.Getenv("DB_ADDRESS"),
-		DBName: os.Getenv("DB_NAME"),
-	}
-	// Get a database handle.
-	var err error
-	db, err = sql.Open("mysql", cfg.FormatDSN())
+	db.Connect()
+
+	albums, err := db.AlbumsByArtist("prince")
+
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
-	pingErr := db.Ping()
-	if pingErr != nil {
-		log.Fatal(pingErr)
+	for _, v := range albums {
+		fmt.Printf("ID: %v, Title: %v, Price: %v\n", v.ID, v.Title, v.Price)
 	}
-	fmt.Println("Connected!")
 }

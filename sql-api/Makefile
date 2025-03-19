@@ -4,10 +4,12 @@
 include .env
 export
 
-build:
-	go build -o myapp cmd/main.go
+build-run: build run
 
-up:
+build:
+	docker build -t sql-api .
+
+run:
 	docker run \
 	-e DB_USER=${DB_USER} \
 	-e DB_PASS=${DB_PASS} \
@@ -16,3 +18,15 @@ up:
 	--rm \
 	--name sql-api \
 	sql-api
+
+mysql:
+	docker run \
+	--name mysql \
+	-e MYSQL_ROOT_PASSWORD=root \
+	-e MYSQL_DATABASE=${DB_NAME} \
+	-p 3306:3306 \
+	-d \
+	-v ./sql:/app/sql \
+	-v ./mysql-data:/var/lib/mysql \
+	--rm \
+	mysql:latest
