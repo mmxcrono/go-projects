@@ -3,8 +3,8 @@ FROM golang:1.24.1 AS builder
 
 WORKDIR /app
 
-# Copy go.mod and go.sum (if it exists)
-COPY ../go.* ./
+# Copy go.mod and go.sum (if they exist)
+COPY go.* ./
 
 # Ensure go.mod exists before downloading dependencies
 RUN test -f go.mod && go mod download || echo "go.mod not found!"
@@ -13,10 +13,12 @@ RUN test -f go.mod && go mod download || echo "go.mod not found!"
 RUN go mod download
 
 # Copy the rest of the code
-COPY ../ .
+COPY . .
 
-# Build the Go application
-RUN go build -o myapp .
+# Build the Go application with static linking enabled
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o myapp ./cmd/main.go
+
+RUN test -f myapp || echo "myapp not found!"
 
 # ---- RUN STAGE ----
 FROM gcr.io/distroless/static:latest
